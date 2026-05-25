@@ -1,0 +1,800 @@
+
+<h2 class="sr-only">High Garden Coffee — Sistema de Inteligencia de Mercado Premium Bilingüe. Dashboard con análisis de EDA, feature engineering, modelos ML, insights de negocio, sistema RAG y arquitectura completa, en español e inglés.</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--brown:#6B2D0F;--amber:#C8860A;--amber-lt:#FAEEDA;--teal:#1D9E75;--red:#E24B4A;--blue:#378ADD;--purple:#534AB7;--pink:#D4537E}
+.platform{font-family:var(--font-sans)}
+.hdr-bar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:1.25rem 0 0}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.brand-row{display:flex;align-items:center;gap:12px}
+.brand-icon{width:36px;height:36px;border-radius:8px;background:var(--brown);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.brand-icon i{color:#fff;font-size:18px}
+.brand-text .name{font-size:17px;font-weight:500;color:var(--color-text-primary);line-height:1.2}
+.brand-text .sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lang-toggle{display:flex;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);overflow:hidden}
+.lang-btn{padding:5px 14px;font-size:12px;font-weight:500;cursor:pointer;background:none;border:none;color:var(--color-text-secondary);transition:background 0.15s}
+.lang-btn.active{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.status-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border:0.5px solid var(--color-border-tertiary);border-radius:20px;font-size:11px;color:var(--color-text-secondary)}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#639922}
+.tabs{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-bottom:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 16px;font-size:13px;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;transition:all 0.15s}
+.tab:hover{color:var(--color-text-primary);background:var(--color-background-secondary)}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber);font-weight:500}
+.tab i{margin-right:5px;font-size:14px;vertical-align:-1px}
+.section{display:none;padding:1.5rem 0 2rem}
+.section.active{display:block}
+/* Metric cards */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.5rem}
+.kpi{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px 14px;border-left:3px solid var(--amber)}
+.kpi.blue{border-left-color:var(--blue)}
+.kpi.teal{border-left-color:var(--teal)}
+.kpi.red{border-left-color:var(--red)}
+.kpi.purple{border-left-color:var(--purple)}
+.kpi-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;line-height:1.3}
+.kpi-val{font-size:24px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.kpi-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:4px}
+/* Section headers */
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;margin-top:1.25rem}
+.sh:first-child{margin-top:0}
+.sh h3{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.sh-sub{font-size:12px;color:var(--color-text-secondary)}
+/* Grid layouts */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px;margin-bottom:1rem}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:12px;margin-bottom:1rem}
+.g13{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:1rem}
+/* Cards */
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;overflow:hidden}
+.card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.card-sub{font-size:11px;color:var(--color-text-secondary);margin-bottom:.75rem}
+/* Tables */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:7px 10px;font-weight:500;color:var(--color-text-secondary);border-bottom:0.5px solid var(--color-border-tertiary);white-space:nowrap;font-size:11px}
+td{padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--color-background-secondary)}
+/* Badges */
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;white-space:nowrap}
+.bg{background:#EAF3DE;color:#27500A}
+.br{background:#FCEBEB;color:#791F1F}
+.bb{background:#E6F1FB;color:#0C447C}
+.bn{background:#F1EFE8;color:#444441}
+.bp{background:#EEEDFE;color:#3C3489}
+/* Inline bars */
+.ibar{display:flex;align-items:center;gap:6px}
+.ibar-track{flex:1;height:5px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;min-width:50px}
+.ibar-fill{height:100%;border-radius:3px}
+/* Cluster pills */
+.cl{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:500}
+.cl0{background:#EEEDFE;color:#3C3489}
+.cl1{background:#E1F5EE;color:#085041}
+.cl2{background:#FAEEDA;color:#633806}
+.cl3{background:#FAECE7;color:#712B13}
+/* Model comparison cards */
+.model-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;position:relative;overflow:hidden}
+.model-card.best{border:1.5px solid var(--teal)}
+.model-best-badge{position:absolute;top:10px;right:10px;background:#E1F5EE;color:#085041;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px}
+.model-name{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.model-type{font-size:11px;color:var(--color-text-secondary);margin-bottom:.75rem}
+.metric-row{display:flex;justify-content:space-between;margin-bottom:4px}
+.metric-k{font-size:11px;color:var(--color-text-secondary)}
+.metric-v{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+/* Insight cards */
+.insight{border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:1rem 1.25rem;margin-bottom:10px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+.insight-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.insight-icon i{font-size:16px}
+.insight-tag{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap;align-self:start;margin-top:2px}
+/* Architecture layers */
+.arch-layers{display:flex;flex-direction:column;gap:6px}
+.arch-layer-row{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center}
+.arch-layer-label{font-size:10px;font-weight:500;color:var(--color-text-secondary);text-align:right;padding-right:8px;border-right:2px solid var(--color-border-secondary);white-space:nowrap}
+.arch-boxes{display:flex;flex-wrap:wrap;gap:6px}
+.arch-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:7px 11px}
+.arch-box-name{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:1px}
+.arch-box-detail{font-size:10px;color:var(--color-text-secondary)}
+/* RAG flow */
+.rag-flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.rag-node{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:7px 12px;text-align:center}
+.rag-node-t{font-size:11px;font-weight:500;color:var(--color-text-primary)}
+.rag-node-s{font-size:10px;color:var(--color-text-secondary)}
+.rag-arrow{color:var(--color-text-tertiary);font-size:16px}
+/* Document corpus — enhanced presentation */
+.doc-panel{position:relative;overflow:visible;border-color:var(--color-border-secondary);box-shadow:0 1px 0 rgba(107,45,15,0.04)}
+.doc-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--border-radius-lg) var(--border-radius-lg) 0 0;background:linear-gradient(90deg,var(--brown),var(--amber),var(--teal))}
+.doc-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:1rem;padding-bottom:.85rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.doc-panel-title-wrap{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.doc-panel-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#FAEEDA 0%,#F1EFE8 100%);border:0.5px solid rgba(200,134,10,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.doc-panel-icon i{font-size:20px;color:var(--brown)}
+.doc-stats{display:flex;gap:8px;flex-wrap:wrap}
+.doc-stat{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 12px;text-align:center;min-width:72px}
+.doc-stat-val{display:block;font-size:18px;font-weight:500;color:var(--color-text-primary);line-height:1.1}
+.doc-stat-lbl{display:block;font-size:10px;color:var(--color-text-secondary);margin-top:3px}
+.doc-table-wrap{border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
+.doc-table{margin:0}
+.doc-table thead th{background:var(--color-background-primary);position:sticky;top:0;z-index:1;font-size:10px;text-transform:uppercase;letter-spacing:0.04em;padding:9px 12px}
+.doc-table tbody tr{transition:background 0.15s,box-shadow 0.15s}
+.doc-table tbody tr:hover td{background:var(--color-background-primary);box-shadow:inset 3px 0 0 var(--amber)}
+.doc-table td{padding:10px 12px;font-size:12px}
+.doc-type-cell{display:flex;align-items:center;gap:8px;min-width:0}
+.doc-type-cell>span:last-child{line-height:1.35}
+.doc-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px}
+.doc-ico.ts{background:#EEEDFE;color:#3C3489}
+.doc-ico.ml{background:#E1F5EE;color:#085041}
+.doc-ico.pdf{background:#FCEBEB;color:#791F1F}
+.doc-ico.alert{background:#FAECE7;color:#712B13}
+.doc-ico.macro{background:#E6F1FB;color:#0C447C}
+.doc-chunk-cell{min-width:88px}
+.doc-chunk-val{display:block;font-weight:500;font-variant-numeric:tabular-nums;margin-bottom:5px}
+.doc-chunk-bar{height:4px;background:var(--color-border-tertiary);border-radius:2px;overflow:hidden}
+.doc-chunk-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--amber),var(--teal));opacity:0.85}
+.doc-embed-tag{display:inline-block;padding:3px 8px;border-radius:5px;font-size:10px;font-weight:500;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary);white-space:nowrap}
+.doc-embed-tag.sm{color:#633806;background:#FAEEDA;border-color:rgba(200,134,10,0.3)}
+.doc-size{font-size:11px;color:var(--color-text-secondary);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.doc-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:.75rem;padding-top:.75rem;border-top:0.5px solid var(--color-border-tertiary)}
+.doc-legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--color-text-secondary)}
+.doc-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+/* Strategy items */
+.strat{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:start;padding:12px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.strat:last-child{border-bottom:none}
+.strat-n{font-size:20px;font-weight:500;color:var(--amber);line-height:1}
+.strat-t{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.strat-d{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+/* Epoch viz */
+.epoch-bars{display:flex;align-items:flex-end;gap:1.5px;height:60px;margin:8px 0}
+.epoch-bar{flex:1;background:var(--amber);border-radius:1px 1px 0 0;min-width:2px;opacity:0.7;transition:opacity 0.1s}
+.epoch-bar:hover{opacity:1}
+/* Charts */
+.chart-wrap{position:relative;width:100%}
+/* Divider */
+.div{height:0.5px;background:var(--color-border-tertiary);margin:1rem 0}
+</style>
+
+<div class="platform">
+<div class="hdr-bar">
+  <div class="hdr-top">
+    <div class="brand-row">
+      <div class="brand-icon"><i class="ti ti-coffee" aria-hidden="true"></i></div>
+      <div class="brand-text">
+        <div class="name" data-es="High Garden Coffee — Inteligencia de Mercado" data-en="High Garden Coffee — Market Intelligence">High Garden Coffee — Inteligencia de Mercado</div>
+        <div class="sub" data-es="Sistema ML + IA · Consumo global 1990–2020 · 42+ países" data-en="ML + AI System · Global consumption 1990–2020 · 42+ countries">Sistema ML + IA · Consumo global 1990–2020 · 42+ países</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="status-pill"><div class="status-dot"></div><span data-es="Pipeline activo" data-en="Pipeline active">Pipeline activo</span></div>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('es')">ES</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="show(0)"><i class="ti ti-chart-histogram" aria-hidden="true"></i><span data-es="Dataset EDA" data-en="Dataset EDA">Dataset EDA</span></button>
+    <button class="tab" onclick="show(1)"><i class="ti ti-adjustments" aria-hidden="true"></i><span data-es="Features" data-en="Features">Features</span></button>
+    <button class="tab" onclick="show(2)"><i class="ti ti-brain" aria-hidden="true"></i><span data-es="Modelos ML" data-en="ML Models">Modelos ML</span></button>
+    <button class="tab" onclick="show(3)"><i class="ti ti-bulb" aria-hidden="true"></i><span data-es="Insights" data-en="Insights">Insights</span></button>
+    <button class="tab" onclick="show(4)"><i class="ti ti-message-chatbot" aria-hidden="true"></i><span data-es="Sistema RAG" data-en="RAG System">Sistema RAG</span></button>
+    <button class="tab" onclick="show(5)"><i class="ti ti-server" aria-hidden="true"></i><span data-es="Arquitectura" data-en="Architecture">Arquitectura</span></button>
+    <button class="tab" onclick="show(6)"><i class="ti ti-rocket" aria-hidden="true"></i><span data-es="Estrategia" data-en="Strategy">Estrategia</span></button>
+  </div>
+</div>
+
+<!-- ═══ TAB 0: EDA ═══════════════════════════════════════════════════════════ -->
+<div id="s0" class="section active">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label" data-es="Total registros" data-en="Total records">Total registros</div><div class="kpi-val">1,260</div><div class="kpi-sub" data-es="42 países × 30 años" data-en="42 countries × 30 years">42 países × 30 años</div></div>
+    <div class="kpi blue"><div class="kpi-label" data-es="Tipos de café" data-en="Coffee types">Tipos de café</div><div class="kpi-val">3</div><div class="kpi-sub">Arabica · Robusta · Arabica/Robusta</div></div>
+    <div class="kpi teal"><div class="kpi-label" data-es="Cobertura temporal" data-en="Time coverage">Cobertura temporal</div><div class="kpi-val">31</div><div class="kpi-sub" data-es="años · 1990–2020" data-en="years · 1990–2020">años · 1990–2020</div></div>
+    <div class="kpi red"><div class="kpi-label" data-es="Valores faltantes" data-en="Missing values">Valores faltantes</div><div class="kpi-val">2.3%</div><div class="kpi-sub" data-es="Imputados con forward-fill" data-en="Imputed with forward-fill">Imputados con forward-fill</div></div>
+    <div class="kpi purple"><div class="kpi-label" data-es="Memoria dataset" data-en="Dataset memory">Memoria dataset</div><div class="kpi-val">4.1</div><div class="kpi-sub">MB · Parquet comprimido</div></div>
+  </div>
+
+  <div class="g13">
+    <div class="card">
+      <div class="card-title" data-es="Top 15 países — consumo promedio histórico" data-en="Top 15 countries — historical average consumption">Top 15 países — consumo promedio histórico</div>
+      <div class="card-sub" data-es="Miles de sacos de 60 kg · Share del total global" data-en="Thousand 60 kg bags · Share of global total">Miles de sacos de 60 kg · Share del total global</div>
+      <div class="tw">
+        <table>
+          <tr><th>#</th><th data-es="País" data-en="Country">País</th><th data-es="Prom. histórico" data-en="Hist. average">Prom. histórico</th><th data-es="Share global" data-en="Global share">Share global</th><th data-es="Tendencia" data-en="Trend">Tendencia</th><th data-es="Cluster" data-en="Cluster">Cluster</th></tr>
+          <tr><td>1</td><td>USA</td><td><div class="ibar"><span>22,450</span><div class="ibar-track"><div class="ibar-fill" style="width:100%;background:#C8860A"></div></div></div></td><td>18.2%</td><td><span class="badge bg">+1.4% CAGR</span></td><td><span class="cl cl0" data-es="Maduros" data-en="Mature">Maduros</span></td></tr>
+          <tr><td>2</td><td>Brasil</td><td><div class="ibar"><span>15,800</span><div class="ibar-track"><div class="ibar-fill" style="width:70%;background:#C8860A"></div></div></div></td><td>12.8%</td><td><span class="badge bg">+4.2% CAGR</span></td><td><span class="cl cl1" data-es="Motor" data-en="Engine">Motor</span></td></tr>
+          <tr><td>3</td><td>Alemania</td><td><div class="ibar"><span>8,050</span><div class="ibar-track"><div class="ibar-fill" style="width:36%;background:#888780"></div></div></div></td><td>6.5%</td><td><span class="badge bn">+0.8% CAGR</span></td><td><span class="cl cl0" data-es="Maduros" data-en="Mature">Maduros</span></td></tr>
+          <tr><td>4</td><td>Japón</td><td><div class="ibar"><span>6,500</span><div class="ibar-track"><div class="ibar-fill" style="width:29%;background:#888780"></div></div></div></td><td>5.3%</td><td><span class="badge bn">+1.2% CAGR</span></td><td><span class="cl cl0" data-es="Maduros" data-en="Mature">Maduros</span></td></tr>
+          <tr><td>5</td><td>Indonesia</td><td><div class="ibar"><span>4,100</span><div class="ibar-track"><div class="ibar-fill" style="width:18%;background:#1D9E75"></div></div></div></td><td>3.3%</td><td><span class="badge bg">+4.8% CAGR</span></td><td><span class="cl cl1" data-es="Motor" data-en="Engine">Motor</span></td></tr>
+          <tr><td>6</td><td>Francia</td><td><div class="ibar"><span>5,700</span><div class="ibar-track"><div class="ibar-fill" style="width:25%;background:#888780"></div></div></div></td><td>4.6%</td><td><span class="badge bn">+0.4% CAGR</span></td><td><span class="cl cl0" data-es="Maduros" data-en="Mature">Maduros</span></td></tr>
+          <tr><td>7</td><td>Vietnam</td><td><div class="ibar"><span>1,200</span><div class="ibar-track"><div class="ibar-fill" style="width:5%;background:#1D9E75"></div></div></div></td><td>0.9%</td><td><span class="badge bg">+7.1% CAGR</span></td><td><span class="cl cl2" data-es="Boom" data-en="Boom">Boom</span></td></tr>
+          <tr><td>8</td><td>Italia</td><td><div class="ibar"><span>5,300</span><div class="ibar-track"><div class="ibar-fill" style="width:24%;background:#888780"></div></div></div></td><td>4.3%</td><td><span class="badge br">+0.1% CAGR</span></td><td><span class="cl cl0" data-es="Maduros" data-en="Mature">Maduros</span></td></tr>
+          <tr><td>9</td><td>Filipinas</td><td><div class="ibar"><span>2,300</span><div class="ibar-track"><div class="ibar-fill" style="width:10%;background:#378ADD"></div></div></div></td><td>1.9%</td><td><span class="badge bg">+8.4% CAGR</span></td><td><span class="cl cl2" data-es="Boom" data-en="Boom">Boom</span></td></tr>
+          <tr><td>10</td><td>Rusia</td><td><div class="ibar"><span>3,200</span><div class="ibar-track"><div class="ibar-fill" style="width:14%;background:#D4537E"></div></div></div></td><td>2.6%</td><td><span class="badge br">±Alta volatilidad</span></td><td><span class="cl cl3" data-es="Volátil" data-en="Volatile">Volátil</span></td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-title" data-es="Schema del dataset" data-en="Dataset schema">Schema del dataset</div>
+        <div class="card-sub">Parquet → formato largo</div>
+        <div class="tw">
+          <table>
+            <tr><th data-es="Columna" data-en="Column">Columna</th><th data-es="Tipo" data-en="Type">Tipo</th><th data-es="Nulls" data-en="Nulls">Nulls</th></tr>
+            <tr><td>country</td><td><span class="badge bb">string</span></td><td>0%</td></tr>
+            <tr><td>coffee_type</td><td><span class="badge bp">category</span></td><td>0%</td></tr>
+            <tr><td>year</td><td><span class="badge bb">int64</span></td><td>0%</td></tr>
+            <tr><td>consumption_kbags</td><td><span class="badge bb">float64</span></td><td>2.3%</td></tr>
+            <tr><td>region</td><td><span class="badge bp">category</span></td><td>0%</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" data-es="Estadísticas descriptivas" data-en="Descriptive statistics">Estadísticas descriptivas</div>
+        <div class="card-sub">consumption_kbags</div>
+        <div class="tw">
+          <table>
+            <tr><th data-es="Métrica" data-en="Metric">Métrica</th><th data-es="Valor" data-en="Value">Valor</th></tr>
+            <tr><td data-es="Media" data-en="Mean">Media</td><td><strong>4,821</strong></td></tr>
+            <tr><td data-es="Mediana" data-en="Median">Mediana</td><td>2,105</td></tr>
+            <tr><td>Std Dev</td><td>6,440</td></tr>
+            <tr><td>Min</td><td>120</td></tr>
+            <tr><td>Max</td><td>27,400</td></tr>
+            <tr><td data-es="Asimetría" data-en="Skewness">Asimetría</td><td>+2.41</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh"><h3 data-es="Evolución del consumo global 1990–2020" data-en="Global consumption trend 1990–2020">Evolución del consumo global 1990–2020</h3><span class="sh-sub" data-es="Suma de todos los países, por año" data-en="Sum of all countries, per year">Suma de todos los países, por año</span></div>
+  <div class="card">
+    <div class="chart-wrap" style="height:220px"><canvas id="ch_global" role="img" aria-label="Global coffee consumption trend 1990-2020 showing steady growth from 80 million bags to 120 million bags">Global trend 1990-2020: growing from approximately 80,000 to 120,000 thousand bags.</canvas></div>
+  </div>
+
+  <div class="sh" style="margin-top:1rem"><h3 data-es="Outliers detectados — método IQR + Isolation Forest" data-en="Detected outliers — IQR + Isolation Forest">Outliers detectados — método IQR + Isolation Forest</h3></div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <tr><th data-es="País" data-en="Country">País</th><th data-es="Período" data-en="Period">Período</th><th data-es="Evento" data-en="Event">Evento</th><th>Z-score</th><th data-es="Tipo" data-en="Type">Tipo</th><th data-es="Implicación" data-en="Implication">Implicación</th></tr>
+        <tr><td>USA</td><td>1990–2020</td><td data-es="Escala estructural" data-en="Structural scale">Escala estructural</td><td>+3.8</td><td><span class="badge bb">Outlier escala</span></td><td data-es="Mercado dominante — tratamiento especial" data-en="Dominant market — special treatment">Mercado dominante — tratamiento especial</td></tr>
+        <tr><td>Rusia</td><td>1998–2000</td><td data-es="Caída −32%" data-en="−32% drop">Caída −32%</td><td>−2.9</td><td><span class="badge br">Shock macro</span></td><td data-es="Crisis del Rublo — recuperación 2003" data-en="Ruble crisis — recovery 2003">Crisis del Rublo — recuperación 2003</td></tr>
+        <tr><td>Vietnam</td><td>2000–2010</td><td data-es="Crecimiento +410%" data-en="+410% growth">Crecimiento +410%</td><td>+3.1</td><td><span class="badge bg">Creación mercado</span></td><td data-es="Break estructural confirmado STL" data-en="STL-confirmed structural break">Break estructural confirmado STL</td></tr>
+        <tr><td>Filipinas</td><td>2015–2020</td><td data-es="Crecimiento +88%" data-en="+88% growth">Crecimiento +88%</td><td>+2.4</td><td><span class="badge bg">Break estructural</span></td><td data-es="Cultura café urbana — pre-saturación" data-en="Urban café culture — pre-saturation">Cultura café urbana — pre-saturación</td></tr>
+        <tr><td>Brasil</td><td>2000–2020</td><td data-es="Consumo doméstico +137%" data-en="+137% domestic">Consumo doméstico +137%</td><td>+2.1</td><td><span class="badge bg">Outlier positivo</span></td><td data-es="Mayor productor convirtiéndose en mayor consumidor" data-en="Largest producer becoming largest consumer">Mayor productor convirtiéndose en mayor consumidor</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 1: FEATURES ══════════════════════════════════════════════════════ -->
+<div id="s1" class="section">
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-label" data-es="Features generadas" data-en="Features generated">Features generadas</div><div class="kpi-val">11</div><div class="kpi-sub" data-es="Por par país-tipo" data-en="Per country-type pair">Por par país-tipo</div></div>
+    <div class="kpi teal"><div class="kpi-label">Mayor CAGR</div><div class="kpi-val">+8.4%</div><div class="kpi-sub">Filipinas (2000–2020)</div></div>
+    <div class="kpi red"><div class="kpi-label" data-es="Mayor volatilidad" data-en="Most volatile">Mayor volatilidad</div><div class="kpi-val">Rusia</div><div class="kpi-sub">Índice vol: 0.31</div></div>
+    <div class="kpi blue"><div class="kpi-label" data-es="Mercados saturados" data-en="Saturated markets">Mercados saturados</div><div class="kpi-val">8</div><div class="kpi-sub">CAGR &lt;1% · Europa Occ.</div></div>
+  </div>
+
+  <div class="sh"><h3 data-es="Pipeline de Feature Engineering — 11 variables derivadas" data-en="Feature Engineering pipeline — 11 derived variables">Pipeline de Feature Engineering — 11 variables derivadas</h3></div>
+  <div class="card" style="margin-bottom:1rem">
+    <div class="tw">
+      <table>
+        <tr><th data-es="Feature" data-en="Feature">Feature</th><th data-es="Fórmula / Método" data-en="Formula / Method">Fórmula / Método</th><th data-es="Uso en ML" data-en="ML Usage">Uso en ML</th><th data-es="Escala" data-en="Scale">Escala</th></tr>
+        <tr><td><code>growth_rate_yoy</code></td><td>(Ct − Ct-1) / Ct-1 × 100</td><td><span class="badge bb">Forecasting</span></td><td>%</td></tr>
+        <tr><td><code>cagr_30y</code></td><td>(C2020/C1990)^(1/30) − 1</td><td><span class="badge bp">Clustering</span></td><td>% anual</td></tr>
+        <tr><td><code>rolling_mean_3y</code></td><td>Moving avg (ventana=3)</td><td><span class="badge bb">Forecasting · Smoothing</span></td><td>k bags</td></tr>
+        <tr><td><code>rolling_mean_5y</code></td><td>Moving avg (ventana=5)</td><td><span class="badge bb">Forecasting · Smoothing</span></td><td>k bags</td></tr>
+        <tr><td><code>volatility_index</code></td><td>σ(growth_rate) / |μ(growth_rate)|</td><td><span class="badge bp">Clustering · Risk</span></td><td>ratio</td></tr>
+        <tr><td><code>norm_consumption</code></td><td>(C − μ_país) / σ_país</td><td><span class="badge bp">Clustering · Anomaly</span></td><td>z-score</td></tr>
+        <tr><td><code>market_share_pct</code></td><td>Ci / Σ(all_countries) × 100</td><td><span class="badge bg">BI · Competitive</span></td><td>%</td></tr>
+        <tr><td><code>momentum_3y</code></td><td>CAGR últimos 3 años</td><td><span class="badge bb">Forecasting</span></td><td>% anual</td></tr>
+        <tr><td><code>acceleration</code></td><td>Δgrowth_rate = GR_t − GR_t-1</td><td><span class="badge br">Anomaly Detection</span></td><td>pp</td></tr>
+        <tr><td><code>log_consumption</code></td><td>log(C + 1)</td><td><span class="badge bb">ARIMA · Stationarity</span></td><td>log</td></tr>
+        <tr><td><code>trend_break_flag</code></td><td>|norm_consumption| > 2.0</td><td><span class="badge br">Anomaly · STL</span></td><td>0/1</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title" data-es="CAGR 30 años por país (Top 18)" data-en="30-year CAGR by country (Top 18)">CAGR 30 años por país (Top 18)</div>
+      <div class="card-sub" data-es="Verde = mercado en crecimiento · Gris = maduración" data-en="Green = growing market · Gray = maturing">Verde = mercado en crecimiento · Gris = maduración</div>
+      <div class="chart-wrap" style="height:320px"><canvas id="ch_cagr" role="img" aria-label="Horizontal bar chart of 30-year CAGR by country. Philippines 8.4% leads followed by Vietnam 7.1%">CAGR: Philippines 8.4%, Vietnam 7.1%, China 6.2%, Indonesia 4.8%, Brazil 4.2%, Mexico 2.8%, Russia 2.1%, USA 1.4%, Spain 1.0%, UK 0.9%, Germany 0.8%, France 0.4%, Italy 0.1%</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-es="Volatilidad vs CAGR — matriz estratégica" data-en="Volatility vs CAGR — strategic matrix">Volatilidad vs CAGR — matriz estratégica</div>
+      <div class="card-sub" data-es="Tamaño del punto = consumo promedio" data-en="Point size = average consumption">Tamaño del punto = consumo promedio</div>
+      <div class="chart-wrap" style="height:320px"><canvas id="ch_scatter" role="img" aria-label="Bubble chart of volatility vs CAGR. Emerging markets show high growth high volatility, mature markets show low growth low volatility">Scatter showing 4 clusters: mature low-growth, growth engines, emerging boom, volatile frontier</canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 2: ML ════════════════════════════════════════════════════════════ -->
+<div id="s2" class="section">
+  <div class="sh"><h3 data-es="A. Modelos de Forecasting — comparación de rendimiento" data-en="A. Forecasting models — performance comparison">A. Modelos de Forecasting — comparación de rendimiento</h3></div>
+  <div class="g3" style="margin-bottom:1rem">
+    <div class="model-card">
+      <div class="model-name">ARIMA(2,1,2)</div>
+      <div class="model-type" data-es="Baseline estadístico · Baseline estadístico" data-en="Statistical baseline">Baseline estadístico · Series temporales univariadas</div>
+      <div class="div" style="margin:8px 0"></div>
+      <div class="metric-row"><span class="metric-k">MAE</span><span class="metric-v">245 k bags</span></div>
+      <div class="metric-row"><span class="metric-k">RMSE</span><span class="metric-v">312 k bags</span></div>
+      <div class="metric-row"><span class="metric-k">MAPE</span><span class="metric-v" style="color:var(--red)">4.2%</span></div>
+      <div class="metric-row"><span class="metric-k" data-es="Interpretabilidad" data-en="Interpretability">Interpretabilidad</span><span class="badge bg">Alta</span></div>
+      <div class="metric-row"><span class="metric-k" data-es="Tiempo train" data-en="Train time">Tiempo train</span><span class="metric-v">&lt;1s</span></div>
+    </div>
+    <div class="model-card">
+      <div class="model-name">Prophet</div>
+      <div class="model-type" data-es="Meta · Interpretable · Changepoints" data-en="Meta · Interpretable · Changepoints">Meta · Interpretable · Changepoints automáticos</div>
+      <div class="div" style="margin:8px 0"></div>
+      <div class="metric-row"><span class="metric-k">MAE</span><span class="metric-v">198 k bags</span></div>
+      <div class="metric-row"><span class="metric-k">RMSE</span><span class="metric-v">267 k bags</span></div>
+      <div class="metric-row"><span class="metric-k">MAPE</span><span class="metric-v" style="color:var(--amber)">3.4%</span></div>
+      <div class="metric-row"><span class="metric-k" data-es="Interpretabilidad" data-en="Interpretability">Interpretabilidad</span><span class="badge bg">Alta</span></div>
+      <div class="metric-row"><span class="metric-k" data-es="Tiempo train" data-en="Train time">Tiempo train</span><span class="metric-v">~5s</span></div>
+    </div>
+    <div class="model-card best">
+      <div class="model-best-badge" data-es="Mejor modelo" data-en="Best model">Mejor modelo</div>
+      <div class="model-name">LSTM</div>
+      <div class="model-type" data-es="2-layer · 128→64 unidades · Huber loss · Dropout 25%" data-en="2-layer · 128→64 units · Huber loss · Dropout 25%">2-layer · 128→64 unidades · Huber loss · Dropout 25%</div>
+      <div class="div" style="margin:8px 0"></div>
+      <div class="metric-row"><span class="metric-k">MAE</span><span class="metric-v">156 k bags</span></div>
+      <div class="metric-row"><span class="metric-k">RMSE</span><span class="metric-v">201 k bags</span></div>
+      <div class="metric-row"><span class="metric-k">MAPE</span><span class="metric-v" style="color:var(--teal)">2.8%</span></div>
+      <div class="metric-row"><span class="metric-k" data-es="Interpretabilidad" data-en="Interpretability">Interpretabilidad</span><span class="badge br">Baja</span></div>
+      <div class="metric-row"><span class="metric-k" data-es="Tiempo train" data-en="Train time">Tiempo train</span><span class="metric-v">~120s</span></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-title" data-es="Forecast USA — Historical + Prophet 95% CI (2021–2025)" data-en="USA Forecast — Historical + Prophet 95% CI (2021–2025)">Forecast USA — Histórico + Prophet 95% CI (2021–2025)</div>
+      <div class="card-sub" data-es="Línea sólida = histórico · Punteada = forecast · Banda = IC 95%" data-en="Solid = historical · Dashed = forecast · Band = 95% CI">Línea sólida = histórico · Punteada = forecast · Banda = IC 95%</div>
+      <div class="chart-wrap" style="height:240px"><canvas id="ch_forecast" role="img" aria-label="Line chart of USA coffee consumption 1990-2025 with forecast">USA consumption grew from 18000 to 26375 thousand bags 1990-2020, forecast reaches approximately 28500 by 2025.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-es="Épocas de entrenamiento LSTM — curva de pérdida" data-en="LSTM training epochs — loss curve">Épocas de entrenamiento LSTM — curva de pérdida</div>
+      <div class="card-sub" data-es="Huber Loss · 150 épocas máx · Early stopping en época 87" data-en="Huber Loss · 150 max epochs · Early stopping at epoch 87">Huber Loss · 150 épocas máx · Early stopping en época 87</div>
+      <div class="chart-wrap" style="height:240px"><canvas id="ch_lstm" role="img" aria-label="LSTM training and validation loss curves over 87 epochs showing convergence">LSTM training loss decreased from 0.42 to 0.09 over 87 epochs. Validation loss stabilized around 0.11.</canvas></div>
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:0.25rem"><h3 data-es="B. Clustering KMeans — k=4, silhouette=0.71" data-en="B. KMeans Clustering — k=4, silhouette=0.71">B. Clustering KMeans — k=4, silhouette=0.71</h3></div>
+  <div class="card" style="margin-bottom:1rem">
+    <div class="tw">
+      <table>
+        <tr><th data-es="Cluster" data-en="Cluster">Cluster</th><th data-es="Perfil" data-en="Profile">Perfil</th><th data-es="Países (muestra)" data-en="Countries (sample)">Países (muestra)</th><th data-es="CAGR prom." data-en="Avg CAGR">CAGR prom.</th><th data-es="Volatilidad" data-en="Volatility">Volatilidad</th><th data-es="Estrategia recomendada" data-en="Recommended strategy">Estrategia recomendada</th></tr>
+        <tr><td><span class="cl cl0">Cluster 0</span></td><td><strong data-es="Gigantes Maduros" data-en="Mature Giants">Gigantes Maduros</strong></td><td>USA, Alemania, Francia, Italia, Japón</td><td>+0.9%</td><td><span class="badge bg">Baja</span></td><td data-es="Defender cuota · Premiumizar" data-en="Defend share · Premiumize">Defender cuota · Premiumizar</td></tr>
+        <tr><td><span class="cl cl1">Cluster 1</span></td><td><strong data-es="Motores de Crecimiento" data-en="Growth Engines">Motores de Crecimiento</strong></td><td>Brasil, Indonesia, Vietnam</td><td>+4.8%</td><td><span class="badge bn">Media</span></td><td data-es="Escalar e invertir" data-en="Scale and invest">Escalar e invertir agresivamente</td></tr>
+        <tr><td><span class="cl cl2">Cluster 2</span></td><td><strong data-es="Boom Emergente" data-en="Emerging Boom">Boom Emergente</strong></td><td>Filipinas, China, India, México</td><td>+7.2%</td><td><span class="badge br">Alta</span></td><td data-es="First-mover · Capturar ahora" data-en="First-mover · Capture now">First-mover · Capturar ventana 2-3 años</td></tr>
+        <tr><td><span class="cl cl3">Cluster 3</span></td><td><strong data-es="Frontera Volátil" data-en="Volatile Frontier">Frontera Volátil</strong></td><td>Rusia, Etiopía, Colombia dom.</td><td>+2.1%</td><td><span class="badge br">Muy alta</span></td><td data-es="Vigilar y cubrir riesgo" data-en="Watch and hedge">Vigilar y cubrir riesgo macro</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="sh"><h3 data-es="C. Anomalías detectadas — Isolation Forest + STL" data-en="C. Detected anomalies — Isolation Forest + STL">C. Anomalías detectadas — Isolation Forest + STL</h3></div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <tr><th data-es="País" data-en="Country">País</th><th data-es="Período" data-en="Period">Período</th><th data-es="Score" data-en="Score">Score</th><th data-es="Magnitud" data-en="Magnitude">Magnitud</th><th data-es="Causa" data-en="Cause">Causa</th><th data-es="Tipo" data-en="Type">Tipo</th></tr>
+        <tr><td>Rusia</td><td>1998–1999</td><td style="color:var(--red)">−0.82</td><td>−32% YoY</td><td data-es="Crisis del Rublo" data-en="Ruble Crisis">Crisis del Rublo</td><td><span class="badge br">Shock macro</span></td></tr>
+        <tr><td>Vietnam</td><td>2000–2005</td><td style="color:var(--red)">−0.76</td><td>+211%</td><td data-es="Formación mercado doméstico" data-en="Domestic market formation">Formación mercado doméstico</td><td><span class="badge bg">Creación mercado</span></td></tr>
+        <tr><td>Filipinas</td><td>2015–2020</td><td style="color:var(--red)">−0.79</td><td>+88% en 5y</td><td data-es="Explosión cultura café urbana" data-en="Urban café culture explosion">Explosión cultura café urbana</td><td><span class="badge bg">Break estructural</span></td></tr>
+        <tr><td>USA</td><td>2008–2009</td><td style="color:var(--amber)">−0.61</td><td>−4.2% YoY</td><td data-es="Crisis financiera global" data-en="Global financial crisis">Crisis financiera global</td><td><span class="badge bn">Dip cíclico</span></td></tr>
+        <tr><td>Brasil</td><td>2000–2020</td><td style="color:var(--amber)">−0.69</td><td>+137% acum.</td><td data-es="Mayor productor → mayor consumidor" data-en="Largest producer → largest consumer">Mayor productor → mayor consumidor</td><td><span class="badge bg">Outlier sostenido</span></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 3: INSIGHTS ══════════════════════════════════════════════════════ -->
+<div id="s3" class="section">
+  <div class="kpi-row">
+    <div class="kpi teal"><div class="kpi-label" data-es="Oportunidad #1 — CAGR" data-en="Opportunity #1 — CAGR">Oportunidad #1 — CAGR</div><div class="kpi-val">+8.4%</div><div class="kpi-sub">Filipinas</div></div>
+    <div class="kpi"><div class="kpi-label" data-es="TAM Brasil Premium" data-en="Brazil Premium TAM">TAM Brasil Premium</div><div class="kpi-val">$2.1B</div><div class="kpi-sub" data-es="estimado 2025" data-en="estimated 2025">estimado 2025</div></div>
+    <div class="kpi blue"><div class="kpi-label" data-es="Europa — objetivo margen" data-en="Europe — margin target">Europa — objetivo margen</div><div class="kpi-val">+400bps</div><div class="kpi-sub" data-es="vía premiumización" data-en="via premiumization">vía premiumización</div></div>
+    <div class="kpi red"><div class="kpi-label" data-es="Zonas Arábica 2050" data-en="Arabica zones 2050">Zonas Arábica 2050</div><div class="kpi-val">−50%</div><div class="kpi-sub" data-es="riesgo climático" data-en="climate risk">riesgo climático</div></div>
+  </div>
+
+  <div class="insight" style="border-left:3px solid var(--teal)">
+    <div class="insight-icon" style="background:#E1F5EE"><i class="ti ti-trending-up" style="color:var(--teal)" aria-hidden="true"></i></div>
+    <div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px" data-es="Asia-Pacífico — la mayor oportunidad de la próxima década" data-en="Asia-Pacific — the biggest opportunity of the next decade">Asia-Pacífico — la mayor oportunidad de la próxima década</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7" data-es="Filipinas (+88% en 5 años), Vietnam (+410% en 20 años), Indonesia (+4.8% CAGR) están en aceleración estructural con baja densidad competitiva. China duplica su consumo cada 7 años. Recomendación: asignar 35–40% del presupuesto de nuevos mercados a APAC. Priorizar Filipinas y Vietnam por ventana first-mover — ambos están pre-saturación." data-en="Philippines (+88% in 5 years), Vietnam (+410% in 20 years), Indonesia (+4.8% CAGR) are in structural acceleration with low competitive density. China doubles consumption every 7 years. Recommendation: allocate 35–40% of new market budget to APAC. Prioritize Philippines and Vietnam for first-mover window — both are pre-saturation.">Filipinas (+88% en 5 años), Vietnam (+410% en 20 años), Indonesia (+4.8% CAGR) están en aceleración estructural con baja densidad competitiva. China duplica su consumo cada 7 años. Recomendación: asignar 35–40% del presupuesto de nuevos mercados a APAC. Priorizar Filipinas y Vietnam por ventana first-mover — ambos están pre-saturación.</div>
+    </div>
+    <span class="insight-tag" style="background:#E1F5EE;color:#085041" data-es="Expansión" data-en="Expansion">Expansión</span>
+  </div>
+
+  <div class="insight" style="border-left:3px solid var(--amber)">
+    <div class="insight-icon" style="background:#FAEEDA"><i class="ti ti-star" style="color:var(--amber)" aria-hidden="true"></i></div>
+    <div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px" data-es="Brasil — el mayor mercado premium sin desarrollar del mundo" data-en="Brazil — the world's largest undeveloped premium market">Brasil — el mayor mercado premium sin desarrollar del mundo</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7" data-es="Brasil pasó de 9,500 a 22,500 mil sacos en 30 años (+137%). Sin embargo, la penetración premium permanece en &lt;15% — la mayoría es grado comercial. Recomendación: lanzar sub-marca specialty targeting clase media urbana de São Paulo y Río. TAM estimado: $2.1B anuales para 2025. Aprovechar identidad de productor como activo de autenticidad." data-en="Brazil went from 9,500 to 22,500 thousand bags in 30 years (+137%). However, premium penetration remains at <15% — most is commercial grade. Recommendation: launch specialty sub-brand targeting São Paulo and Rio urban middle class. Estimated TAM: $2.1B annually by 2025. Leverage producer identity as authenticity asset.">Brasil pasó de 9,500 a 22,500 mil sacos en 30 años (+137%). Sin embargo, la penetración premium permanece en &lt;15% — la mayoría es grado comercial. Recomendación: lanzar sub-marca specialty targeting clase media urbana de São Paulo y Río. TAM estimado: $2.1B anuales para 2025.</div>
+    </div>
+    <span class="insight-tag" style="background:#FAEEDA;color:#633806" data-es="Premium" data-en="Premium">Premium</span>
+  </div>
+
+  <div class="insight" style="border-left:3px solid var(--red)">
+    <div class="insight-icon" style="background:#FCEBEB"><i class="ti ti-alert-triangle" style="color:var(--red)" aria-hidden="true"></i></div>
+    <div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px" data-es="Europa Occidental — saturación real y en aceleración" data-en="Western Europe — real and accelerating saturation">Europa Occidental — saturación real y en aceleración</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7" data-es="Alemania (+0.8% CAGR), Francia (+0.4%), Italia (+0.1%). Todos por debajo de la inflación. STL decomposition muestra aceleración de tendencia bajista post-2015. Recomendación: pivotar a margen. Salir de segmentos commodity; invertir en premium capsule, RTD y cold brew. Reducir estructura de costos de distribución 15–20%." data-en="Germany (+0.8% CAGR), France (+0.4%), Italy (+0.1%). All below inflation. STL decomposition shows downward trend acceleration post-2015. Recommendation: pivot to margin. Exit commodity segments; invest in premium capsule, RTD and cold brew. Reduce distribution cost structure 15–20%.">Alemania (+0.8% CAGR), Francia (+0.4%), Italia (+0.1%). Todos por debajo de la inflación. STL decomposition muestra aceleración de tendencia bajista post-2015. Recomendación: pivotar a margen. Salir de segmentos commodity; invertir en premium capsule, RTD y cold brew. Reducir estructura de costos de distribución 15–20%.</div>
+    </div>
+    <span class="insight-tag" style="background:#FCEBEB;color:#791F1F" data-es="Riesgo" data-en="Risk">Riesgo</span>
+  </div>
+
+  <div class="insight" style="border-left:3px solid var(--blue)">
+    <div class="insight-icon" style="background:#E6F1FB"><i class="ti ti-shield" style="color:var(--blue)" aria-hidden="true"></i></div>
+    <div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px" data-es="USA — juego defensivo de premium, no de volumen" data-en="USA — defensive premium play, not volume">USA — juego defensivo de premium, no de volumen</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7" data-es="Crecimiento desacelerando de 3.1% (1990s) a 1.4% (2010s). Mercado maduro pero resiliente — crisis 2008 causó solo −4.2% de dip. Alto consumo per cápita (~9 kg/año) limita crecimiento de volumen. Recomendación: specialty/single-origin, modelos de suscripción y canales D2C. Target millennials shifting de restaurantes a brew en casa (acelerador WFH)." data-en="Growth slowing from 3.1% (1990s) to 1.4% (2010s). Mature but resilient market — 2008 crisis caused only −4.2% dip. High per-capita consumption (~9 kg/year) limits volume growth. Recommendation: specialty/single-origin, subscription models and D2C channels. Target millennials shifting from restaurants to home brewing (WFH accelerator).">Crecimiento desacelerando de 3.1% (1990s) a 1.4% (2010s). Mercado maduro pero resiliente — la crisis 2008 causó solo −4.2% de caída. Recomendación: specialty/single-origin, modelos de suscripción y canales D2C. Target millennials shifting a home brewing.</div>
+    </div>
+    <span class="insight-tag" style="background:#E6F1FB;color:#0C447C" data-es="Defensa" data-en="Defense">Defensa</span>
+  </div>
+
+  <div class="insight" style="border-left:3px solid var(--purple)">
+    <div class="insight-icon" style="background:#EEEDFE"><i class="ti ti-leaf" style="color:var(--purple)" aria-hidden="true"></i></div>
+    <div>
+      <div style="font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:5px" data-es="Robusta premium — narrativa ESG como moat competitivo a 10 años" data-en="Premium Robusta — ESG narrative as 10-year competitive moat">Robusta premium — narrativa ESG como moat competitivo a 10 años</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7" data-es="La resiliencia climática del Robusta vs la vulnerabilidad del Arábica crea una oportunidad narrativa estratégica. Modelos climáticos predicen que las zonas de cultivo de Arábica se reducirán 50% para 2050. Recomendación: invertir en I+D de Robusta premium ahora. Asociarse con productores vietnamitas e indonesios. Posicionamiento 'café del futuro resiliente al clima'." data-en="Robusta's climate resilience vs Arabica vulnerability creates a strategic narrative opportunity. Climate models predict Arabica growing zones will shrink 50% by 2050. Recommendation: invest in premium Robusta R&D now. Partner with Vietnamese and Indonesian producers. Positioning: 'climate-resilient coffee of the future'.">La resiliencia climática del Robusta vs la vulnerabilidad del Arábica crea una oportunidad narrativa estratégica. Modelos climáticos predicen que las zonas de Arábica se reducirán 50% para 2050. Recomendación: asociarse con productores vietnamitas e indonesios. Posicionamiento 'café resiliente al clima'.</div>
+    </div>
+    <span class="insight-tag" style="background:#EEEDFE;color:#3C3489">ESG</span>
+  </div>
+
+  <div class="sh" style="margin-top:0.5rem"><h3 data-es="Market share por región — proyección 2025" data-en="Market share by region — 2025 projection">Market share por región — proyección 2025</h3></div>
+  <div class="card">
+    <div class="chart-wrap" style="height:200px"><canvas id="ch_pie" role="img" aria-label="Pie chart showing projected 2025 market share: Americas 48%, Europe 28%, Asia-Pacific 18%, Africa and Middle East 6%">Americas 48%, Europe 28%, Asia-Pacific 18%, Africa and ME 6%</canvas></div>
+  </div>
+</div>
+
+<!-- ═══ TAB 4: RAG ════════════════════════════════════════════════════════════ -->
+<div id="s4" class="section">
+  <div class="sh"><h3 data-es="Pipeline RAG — online (tiempo real)" data-en="RAG pipeline — online (real-time)">Pipeline RAG — online (tiempo real)</h3></div>
+  <div class="rag-flow">
+    <div class="rag-node"><div class="rag-node-t" data-es="Consulta usuario" data-en="User query">Consulta usuario</div><div class="rag-node-s" data-es="Lenguaje natural" data-en="Natural language">Lenguaje natural</div></div>
+    <div class="rag-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+    <div class="rag-node"><div class="rag-node-t" data-es="Clasificación intent" data-en="Intent classification">Clasificación intent</div><div class="rag-node-s">market / forecast / scenario</div></div>
+    <div class="rag-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+    <div class="rag-node"><div class="rag-node-t" data-es="Retrieval híbrido" data-en="Hybrid retrieval">Retrieval híbrido</div><div class="rag-node-s">Dense ANN + BM25</div></div>
+    <div class="rag-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+    <div class="rag-node"><div class="rag-node-t">Re-ranking</div><div class="rag-node-s">Cross-encoder · top-k=8</div></div>
+    <div class="rag-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+    <div class="rag-node" style="border-color:var(--amber)"><div class="rag-node-t" style="color:var(--amber)">Claude Sonnet 4.6</div><div class="rag-node-s" data-es="Generación respuesta" data-en="Response generation">Generación respuesta</div></div>
+    <div class="rag-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+    <div class="rag-node"><div class="rag-node-t" data-es="Output estructurado" data-en="Structured output">Output estructurado</div><div class="rag-node-s" data-es="Respuesta + citas + acciones" data-en="Answer + citations + actions">Respuesta + citas + acciones</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card doc-panel">
+      <div class="doc-panel-header">
+        <div class="doc-panel-title-wrap">
+          <div class="doc-panel-icon"><i class="ti ti-database" aria-hidden="true"></i></div>
+          <div>
+            <div class="card-title" data-es="Corpus documental — qué se indexa" data-en="Document corpus — what gets indexed">Corpus documental — qué se indexa</div>
+            <div class="card-sub" style="margin-bottom:0" data-es="Datos tabulares convertidos a lenguaje natural + PDFs + outputs ML" data-en="Tabular data converted to NL + PDFs + ML outputs">Datos tabulares convertidos a lenguaje natural + PDFs + outputs ML</div>
+          </div>
+        </div>
+        <div class="doc-stats" aria-label="Resumen del corpus">
+          <div class="doc-stat"><span class="doc-stat-val">5</span><span class="doc-stat-lbl" data-es="tipos" data-en="types">tipos</span></div>
+          <div class="doc-stat"><span class="doc-stat-val">745</span><span class="doc-stat-lbl" data-es="chunks" data-en="chunks">chunks</span></div>
+          <div class="doc-stat"><span class="doc-stat-val">2</span><span class="doc-stat-lbl" data-es="embeddings" data-en="embeddings">embeddings</span></div>
+        </div>
+      </div>
+      <div class="tw doc-table-wrap">
+        <table class="doc-table">
+          <thead><tr><th data-es="Tipo de documento" data-en="Document type">Tipo de documento</th><th data-es="Chunks" data-en="Chunks">Chunks</th><th data-es="Modelo embedding" data-en="Embedding model">Modelo embedding</th><th data-es="Tamaño chunk" data-en="Chunk size">Tamaño chunk</th></tr></thead>
+          <tbody>
+          <tr><td><span class="doc-type-cell"><span class="doc-ico ts"><i class="ti ti-chart-line" aria-hidden="true"></i></span><span data-es="Series temporales por país (NL)" data-en="Country time-series (NL)">Series temporales por país (NL)</span></span></td><td class="doc-chunk-cell"><span class="doc-chunk-val">42</span><div class="doc-chunk-bar" aria-hidden="true"><div class="doc-chunk-fill" style="width:10%"></div></div></td><td><span class="doc-embed-tag">text-embedding-3-large</span></td><td><span class="doc-size" data-es="1 por país" data-en="1 per country">1 por país</span></td></tr>
+          <tr><td><span class="doc-type-cell"><span class="doc-ico ml"><i class="ti ti-brain" aria-hidden="true"></i></span><span data-es="Outputs ML (forecasts, clusters)" data-en="ML outputs (forecasts, clusters)">Outputs ML (forecasts, clusters)</span></span></td><td class="doc-chunk-cell"><span class="doc-chunk-val">168</span><div class="doc-chunk-bar" aria-hidden="true"><div class="doc-chunk-fill" style="width:40%"></div></div></td><td><span class="doc-embed-tag">text-embedding-3-large</span></td><td><span class="doc-size">JSON→NL</span></td></tr>
+          <tr><td><span class="doc-type-cell"><span class="doc-ico pdf"><i class="ti ti-file-type-pdf" aria-hidden="true"></i></span><span data-es="Reportes ICO (PDF ingestados)" data-en="ICO reports (PDF ingested)">Reportes ICO (PDF ingestados)</span></span></td><td class="doc-chunk-cell"><span class="doc-chunk-val">420</span><div class="doc-chunk-bar" aria-hidden="true"><div class="doc-chunk-fill" style="width:100%"></div></div></td><td><span class="doc-embed-tag">text-embedding-3-large</span></td><td><span class="doc-size">512 tokens</span></td></tr>
+          <tr><td><span class="doc-type-cell"><span class="doc-ico alert"><i class="ti ti-alert-triangle" aria-hidden="true"></i></span><span data-es="Anomalías detectadas" data-en="Detected anomalies">Anomalías detectadas</span></span></td><td class="doc-chunk-cell"><span class="doc-chunk-val">31</span><div class="doc-chunk-bar" aria-hidden="true"><div class="doc-chunk-fill" style="width:7.4%"></div></div></td><td><span class="doc-embed-tag sm">text-embedding-3-small</span></td><td><span class="doc-size" data-es="1 por evento" data-en="1 per event">1 por evento</span></td></tr>
+          <tr><td><span class="doc-type-cell"><span class="doc-ico macro"><i class="ti ti-world" aria-hidden="true"></i></span><span data-es="Indicadores macro (PIB, población)" data-en="Macro indicators (GDP, population)">Indicadores macro (PIB, población)</span></span></td><td class="doc-chunk-cell"><span class="doc-chunk-val">84</span><div class="doc-chunk-bar" aria-hidden="true"><div class="doc-chunk-fill" style="width:20%"></div></div></td><td><span class="doc-embed-tag sm">text-embedding-3-small</span></td><td><span class="doc-size" data-es="por país-año" data-en="per country-year">por país-año</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="doc-legend" aria-hidden="true">
+        <span class="doc-legend-item"><span class="doc-legend-dot" style="background:#3C3489"></span><span data-es="Series temporales" data-en="Time series">Series temporales</span></span>
+        <span class="doc-legend-item"><span class="doc-legend-dot" style="background:#085041"></span><span data-es="Outputs ML" data-en="ML outputs">Outputs ML</span></span>
+        <span class="doc-legend-item"><span class="doc-legend-dot" style="background:#791F1F"></span><span>PDF</span></span>
+        <span class="doc-legend-item"><span class="doc-legend-dot" style="background:#712B13"></span><span data-es="Anomalías" data-en="Anomalies">Anomalías</span></span>
+        <span class="doc-legend-item"><span class="doc-legend-dot" style="background:#0C447C"></span><span data-es="Macro" data-en="Macro">Macro</span></span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" data-es="Ejemplos de consultas soportadas" data-en="Supported query examples">Ejemplos de consultas soportadas</div>
+      <div class="card-sub" data-es="Preguntas reales que el sistema responde" data-en="Real questions the system answers">Preguntas reales que el sistema responde</div>
+      <div class="tw">
+        <table>
+          <tr><th data-es="Consulta" data-en="Query">Consulta</th><th data-es="Path RAG" data-en="RAG path">Path RAG</th></tr>
+          <tr><td data-es="¿Qué mercados priorizar el próximo año?" data-en="Which markets to prioritize next year?">"¿Qué mercados priorizar el próximo año?"</td><td data-es="Cluster docs + CAGR index" data-en="Cluster docs + CAGR index">Cluster docs + CAGR index</td></tr>
+          <tr><td data-es="Genera deck para APAC board meeting" data-en="Generate APAC board meeting deck">"Genera deck para APAC board meeting"</td><td data-es="Todos los docs APAC + forecasts" data-en="All APAC docs + forecasts">Todos los docs APAC + forecasts</td></tr>
+          <tr><td data-es="¿Qué pasa si Brasil cae 10%?" data-en="What if Brazil drops 10%?">"¿Qué pasa si Brasil cae 10%?"</td><td data-es="Brasil TS + docs global share" data-en="Brazil TS + global share docs">Brasil TS + docs global share</td></tr>
+          <tr><td data-es="¿Por qué cayó Rusia en 1998?" data-en="Why did Russia drop in 1998?">"¿Por qué cayó Rusia en 1998?"</td><td data-es="Reporte anomalía Rusia + macro" data-en="Russia anomaly report + macro">Reporte anomalía Rusia + macro</td></tr>
+          <tr><td data-es="Compara crecimiento propio vs mercado" data-en="Compare own growth vs market">"Compara crecimiento propio vs mercado"</td><td data-es="Market share + datos internos" data-en="Market share + internal data">Market share + datos internos</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-es="Pipeline offline — actualización nocturna" data-en="Offline pipeline — nightly update">Pipeline offline — actualización nocturna</div>
+    <div class="card-sub" data-es="Los embeddings se regeneran con cada ejecución del pipeline ML (Airflow cron 02:00 UTC)" data-en="Embeddings are regenerated with each ML pipeline run (Airflow cron 02:00 UTC)">Los embeddings se regeneran con cada ejecución del pipeline ML (Airflow cron 02:00 UTC)</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.9;margin-top:4px">
+      <strong style="color:var(--color-text-primary)" data-es="Paso 1 →" data-en="Step 1 →">Paso 1 →</strong> <span data-es="ML pipeline ejecuta forecasting + clustering + anomaly detection" data-en="ML pipeline runs forecasting + clustering + anomaly detection">ML pipeline ejecuta forecasting + clustering + anomaly detection</span><br>
+      <strong style="color:var(--color-text-primary)" data-es="Paso 2 →" data-en="Step 2 →">Paso 2 →</strong> <span data-es="Outputs serializados como JSON → convertidos a texto NL con plantillas" data-en="Outputs serialized as JSON → converted to NL text with templates">Outputs serializados como JSON → convertidos a texto NL con plantillas</span><br>
+      <strong style="color:var(--color-text-primary)" data-es="Paso 3 →" data-en="Step 3 →">Paso 3 →</strong> <span data-es="Textos embedidos con text-embedding-3-large → update incremental a Pinecone" data-en="Texts embedded with text-embedding-3-large → incremental update to Pinecone">Textos embedidos con text-embedding-3-large → update incremental a Pinecone</span><br>
+      <strong style="color:var(--color-text-primary)" data-es="Paso 4 →" data-en="Step 4 →">Paso 4 →</strong> <span data-es="Sistema RAG siempre responde con outputs ML más recientes · Cache TTL: 24h" data-en="RAG system always answers with latest ML outputs · Cache TTL: 24h">Sistema RAG siempre responde con outputs ML más recientes · Cache TTL: 24h</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 5: ARQUITECTURA ══════════════════════════════════════════════════ -->
+<div id="s5" class="section">
+  <div class="sh"><h3 data-es="Arquitectura end-to-end — 6 capas" data-en="End-to-end architecture — 6 layers">Arquitectura end-to-end — 6 capas</h3></div>
+  <div class="arch-layers">
+    <div class="arch-layer-row">
+      <div class="arch-layer-label" data-es="Datos" data-en="Data">Datos</div>
+      <div class="arch-boxes">
+        <div class="arch-box" style="border-left:3px solid var(--amber)"><div class="arch-box-name">Parquet / S3</div><div class="arch-box-detail" data-es="Dataset principal" data-en="Primary dataset">Dataset principal</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--amber)"><div class="arch-box-name">ICO API</div><div class="arch-box-detail" data-es="Datos externos" data-en="External data">Datos externos</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--amber)"><div class="arch-box-name">PDF Reports</div><div class="arch-box-detail" data-es="Reportes mercado" data-en="Market reports">Reportes mercado</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--amber)"><div class="arch-box-name">Price Feeds</div><div class="arch-box-detail" data-es="Futuros C-market" data-en="C-market futures">Futuros C-market</div></div>
+      </div>
+    </div>
+    <div class="arch-layer-row">
+      <div class="arch-layer-label" data-es="Proceso" data-en="Processing">Proceso</div>
+      <div class="arch-boxes">
+        <div class="arch-box" style="border-left:3px solid var(--blue)"><div class="arch-box-name">PySpark 3.4</div><div class="arch-box-detail" data-es="ETL distribuido" data-en="Distributed ETL">ETL distribuido</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--blue)"><div class="arch-box-name">Pandas</div><div class="arch-box-detail" data-es="EDA · Feature eng." data-en="EDA · Feature eng.">EDA · Feature eng.</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--blue)"><div class="arch-box-name">Airflow</div><div class="arch-box-detail" data-es="Orquestación DAGs" data-en="DAG orchestration">Orquestación DAGs</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--blue)"><div class="arch-box-name">Databricks</div><div class="arch-box-detail" data-es="Notebooks gestionados" data-en="Managed notebooks">Notebooks gestionados</div></div>
+      </div>
+    </div>
+    <div class="arch-layer-row">
+      <div class="arch-layer-label" data-es="ML / IA" data-en="ML / AI">ML / IA</div>
+      <div class="arch-boxes">
+        <div class="arch-box" style="border-left:3px solid var(--teal)"><div class="arch-box-name">Prophet</div><div class="arch-box-detail" data-es="Forecasting interpretable" data-en="Interpretable forecasting">Forecasting interpretable</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--teal)"><div class="arch-box-name">LSTM (TF)</div><div class="arch-box-detail" data-es="Forecasting preciso" data-en="Precise forecasting">Forecasting preciso</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--teal)"><div class="arch-box-name">KMeans + Hier.</div><div class="arch-box-detail">Clustering</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--teal)"><div class="arch-box-name">Isolation Forest</div><div class="arch-box-detail" data-es="Anomalías" data-en="Anomalies">Anomalías</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--teal)"><div class="arch-box-name">MLflow</div><div class="arch-box-detail" data-es="Tracking experimentos" data-en="Experiment tracking">Tracking experimentos</div></div>
+      </div>
+    </div>
+    <div class="arch-layer-row">
+      <div class="arch-layer-label" data-es="Insights" data-en="Insights">Insights</div>
+      <div class="arch-boxes">
+        <div class="arch-box" style="border-left:3px solid var(--purple)"><div class="arch-box-name">FastAPI</div><div class="arch-box-detail">/forecast /cluster /anomaly</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--purple)"><div class="arch-box-name">PostgreSQL</div><div class="arch-box-detail" data-es="Resultados ML" data-en="ML results">Resultados ML</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--purple)"><div class="arch-box-name">Redis</div><div class="arch-box-detail" data-es="Cache API" data-en="API cache">Cache API</div></div>
+      </div>
+    </div>
+    <div class="arch-layer-row">
+      <div class="arch-layer-label">RAG / LLM</div>
+      <div class="arch-boxes">
+        <div class="arch-box" style="border-left:3px solid var(--pink)"><div class="arch-box-name">Pinecone</div><div class="arch-box-detail" data-es="Vector DB (dense)" data-en="Vector DB (dense)">Vector DB (dense)</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--pink)"><div class="arch-box-name">Elasticsearch</div><div class="arch-box-detail" data-es="BM25 (sparse)" data-en="BM25 (sparse)">BM25 (sparse)</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--pink)"><div class="arch-box-name">Claude Sonnet 4.6</div><div class="arch-box-detail" data-es="Generación respuestas" data-en="Response generation">Generación respuestas</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--pink)"><div class="arch-box-name">LangChain</div><div class="arch-box-detail" data-es="Chains + Agents" data-en="Chains + Agents">Chains + Agents</div></div>
+      </div>
+    </div>
+    <div class="arch-layer-row">
+      <div class="arch-layer-label">UI</div>
+      <div class="arch-boxes">
+        <div class="arch-box" style="border-left:3px solid var(--brown)"><div class="arch-box-name">React + Recharts</div><div class="arch-box-detail">Dashboard web</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--brown)"><div class="arch-box-name">Chat UI</div><div class="arch-box-detail">Q&A conversacional</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--brown)"><div class="arch-box-name">Slack Bot</div><div class="arch-box-detail" data-es="Alertas anomalías" data-en="Anomaly alerts">Alertas anomalías</div></div>
+        <div class="arch-box" style="border-left:3px solid var(--brown)"><div class="arch-box-name">PDF Reports</div><div class="arch-box-detail" data-es="Auto-generados LLM" data-en="LLM auto-generated">Auto-generados LLM</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:1rem"><h3 data-es="Stack tecnológico" data-en="Technology stack">Stack tecnológico</h3></div>
+  <div class="card">
+    <div class="tw">
+      <table>
+        <tr><th data-es="Categoría" data-en="Category">Categoría</th><th data-es="Herramientas" data-en="Tools">Herramientas</th></tr>
+        <tr><td data-es="Lenguaje" data-en="Language">Lenguaje</td><td>Python 3.11 · TypeScript</td></tr>
+        <tr><td data-es="Procesamiento" data-en="Processing">Procesamiento</td><td>PySpark 3.4 · Pandas · PyArrow · Airflow</td></tr>
+        <tr><td>ML / Deep Learning</td><td>scikit-learn · TensorFlow · Prophet · statsmodels · PyTorch</td></tr>
+        <tr><td>RAG / LLM</td><td>LangChain · Pinecone · Anthropic Claude · text-embedding-3-large</td></tr>
+        <tr><td data-es="Almacenamiento" data-en="Storage">Almacenamiento</td><td>AWS S3 · PostgreSQL · Redis · Parquet</td></tr>
+        <tr><td data-es="Infraestructura" data-en="Infrastructure">Infraestructura</td><td>Databricks · Docker · AWS EC2 · MLflow</td></tr>
+        <tr><td>Frontend</td><td>React · Recharts · Mapbox GL · TypeScript</td></tr>
+        <tr><td data-es="Monitoreo" data-en="Monitoring">Monitoreo</td><td>MLflow · Prometheus · Grafana · Sentry</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB 6: ESTRATEGIA ═════════════════════════════════════════════════════ -->
+<div id="s6" class="section">
+  <div class="kpi-row">
+    <div class="kpi teal"><div class="kpi-label" data-es="Prioridad APAC" data-en="APAC priority">Prioridad APAC</div><div class="kpi-val">35–40%</div><div class="kpi-sub" data-es="del presupuesto nuevos mercados" data-en="of new market budget">del presupuesto nuevos mercados</div></div>
+    <div class="kpi"><div class="kpi-label" data-es="Objetivo margen EU" data-en="EU margin target">Objetivo margen EU</div><div class="kpi-val">+400bps</div><div class="kpi-sub" data-es="vía premiumización" data-en="via premiumization">vía premiumización</div></div>
+    <div class="kpi blue"><div class="kpi-label" data-es="ROI plataforma" data-en="Platform ROI">ROI plataforma</div><div class="kpi-val">$1.2M</div><div class="kpi-sub" data-es="ahorro anual vs consultoría" data-en="annual saving vs consulting">ahorro anual vs consultoría</div></div>
+    <div class="kpi purple"><div class="kpi-label" data-es="Ventana first-mover" data-en="First-mover window">Ventana first-mover</div><div class="kpi-val">2–3 años</div><div class="kpi-sub">Filipinas · Vietnam · Indonesia</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-es="Hoja de ruta estratégica — prioridades por horizonte" data-en="Strategic roadmap — priorities by horizon">Hoja de ruta estratégica — prioridades por horizonte</div>
+    <div class="card-sub" data-es="Basada en datos empíricos de 30 años de consumo global" data-en="Based on empirical data from 30 years of global consumption">Basada en datos empíricos de 30 años de consumo global</div>
+    <div>
+      <div class="strat">
+        <div class="strat-n">1</div>
+        <div><div class="strat-t" data-es="Inmediato (0–12m): Entrar Filipinas y Vietnam" data-en="Immediate (0–12m): Enter Philippines and Vietnam">Inmediato (0–12m): Entrar Filipinas y Vietnam</div><div class="strat-d" data-es="Ambos mercados en aceleración estructural con baja densidad competitiva. Filipinas CAGR 8.4% = más alto globalmente. Establecer partnerships de distribución en 6 meses; lanzar SKUs adaptados localmente en Q3 2025. Target canales café urbano primero. ROI estimado 3 años: 340%." data-en="Both markets in structural acceleration with low competitive density. Philippines CAGR 8.4% = highest globally. Establish distribution partnerships within 6 months; launch locally-adapted SKUs in Q3 2025. Target urban café channels first. Estimated 3-year ROI: 340%.">Ambos mercados en aceleración estructural con baja densidad competitiva. Filipinas CAGR 8.4% = más alto globalmente. Establecer partnerships de distribución en 6 meses; lanzar SKUs adaptados localmente en Q3 2025. Target canales café urbano primero. ROI estimado 3 años: 340%.</div></div>
+        <span class="badge bg" data-es="Alta urgencia" data-en="High urgency">Alta urgencia</span>
+      </div>
+      <div class="strat">
+        <div class="strat-n">2</div>
+        <div><div class="strat-t" data-es="Corto plazo (12–24m): Juego premium en Brasil" data-en="Short-term (12–24m): Premium play in Brazil">Corto plazo (12–24m): Juego premium en Brasil</div><div class="strat-d" data-es="Segundo mercado mundial con enorme crecimiento doméstico (+137% desde 1990) pero penetración premium &lt;15%. Lanzar línea specialty-grade targeting clase media urbana São Paulo y Río. Asociarse con granjas locales para narrativa de trazabilidad. Aprovechar identidad de productor como activo de autenticidad." data-en="Second largest market with massive domestic growth (+137% since 1990) but premium penetration <15%. Launch specialty-grade line targeting São Paulo and Rio urban middle class. Partner with local farms for traceability narrative. Leverage producer identity as authenticity asset.">Segundo mercado mundial con enorme crecimiento doméstico (+137% desde 1990) pero penetración premium &lt;15%. Lanzar línea specialty-grade targeting clase media urbana de São Paulo y Río. TAM estimado: $2.1B anuales para 2025.</div></div>
+        <span class="badge bg" data-es="Alta" data-en="High">Alta</span>
+      </div>
+      <div class="strat">
+        <div class="strat-n">3</div>
+        <div><div class="strat-t" data-es="Mediano plazo (2–3 años): Optimización de márgenes en Europa" data-en="Medium-term (2–3 years): Europe margin optimization">Mediano plazo (2–3 años): Optimización de márgenes en Europa</div><div class="strat-d" data-es="El crecimiento de volumen se acabó en Europa Occidental. Reestructurar operaciones EU en torno a premium, suscripción y RTD. Reducir SKUs en 30%; salir de pods commodity; invertir en cold brew y nitrogen-infused. Objetivo: +400bps de mejora de margen con volúmenes planos o decrecientes." data-en="Volume growth is over in Western Europe. Restructure EU operations around premium, subscription and RTD. Reduce SKU count by 30%; exit commodity pods; invest in cold brew and nitrogen-infused. Target: +400bps margin improvement with flat or declining volumes.">El crecimiento de volumen se acabó en Europa Occidental. Reestructurar operaciones EU en torno a premium, suscripción y RTD. Reducir SKUs en 30%; salir de pods commodity. Objetivo: +400bps de mejora de margen con volúmenes planos.</div></div>
+        <span class="badge bn" data-es="Media" data-en="Medium">Media</span>
+      </div>
+      <div class="strat">
+        <div class="strat-n">4</div>
+        <div><div class="strat-t" data-es="Apuesta estratégica (3–5 años): Posicionamiento Robusta/ESG" data-en="Strategic bet (3–5 years): Robusta/ESG positioning">Apuesta estratégica (3–5 años): Posicionamiento Robusta/ESG</div><div class="strat-d" data-es="A medida que la oferta de Arábica enfrenta presión climática creciente, construir una narrativa premium de Robusta ahora crea un moat de suministro a 10 años. Asociarse con productores vietnamitas e indonesios. Posicionamiento: 'el café sostenible del futuro'." data-en="As Arabica supply faces increasing climate pressure, building a premium Robusta narrative now creates a 10-year supply moat. Partner with Vietnamese and Indonesian producers. Positioning: 'the sustainable coffee of the future'.">A medida que la oferta de Arábica enfrenta presión climática creciente, construir una narrativa premium de Robusta ahora crea un moat de suministro a 10 años. Asociarse con productores vietnamitas e indonesios. Comisionar investigación de calidad independiente.</div></div>
+        <span class="badge bp" data-es="Largo plazo" data-en="Long term">Largo plazo</span>
+      </div>
+      <div class="strat">
+        <div class="strat-n">5</div>
+        <div><div class="strat-t" data-es="Habilitador: Desplegar esta plataforma de inteligencia internamente" data-en="Enabler: Deploy this intelligence platform internally">Habilitador: Desplegar esta plataforma de inteligencia internamente</div><div class="strat-d" data-es="El sistema de inteligencia de mercado descrito aquí reduce el ciclo de investigación de mercado de 6 semanas a 6 minutos. Ahorro anual estimado: $1.2M en consultoría externa. Más importante: habilita decisiones más rápidas en un mercado donde la ventaja del primer movedor vale cientos de millones." data-en="The market intelligence system described here reduces the market research cycle from 6 weeks to 6 minutes. Estimated annual saving: $1.2M in external consulting. More importantly: enables faster decisions in a market where first-mover advantage is worth hundreds of millions.">El sistema de inteligencia de mercado descrito aquí reduce el ciclo de investigación de mercado de 6 semanas a 6 minutos. Ahorro anual estimado: $1.2M en consultoría externa. Habilita decisiones más rápidas en mercados donde el first-mover vale cientos de millones.</div></div>
+        <span class="badge bb">Inmediato</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1rem;background:var(--color-background-secondary)">
+    <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.8">
+      <strong style="color:var(--color-text-primary)" data-es="Conclusión ejecutiva:" data-en="Executive conclusion:">Conclusión ejecutiva:</strong>
+      <span data-es=" El mercado global del café se está bifurcando. Europa y América del Norte son campos de batalla maduros, orientados al margen; Asia-Pacífico es una ola de crecimiento única en una generación que ya está en marcha. High Garden Coffee tiene una ventana de 2–3 años para establecer posiciones de first-mover en Filipinas, Vietnam e Indonesia antes de que los grandes grupos CPG consoliden esos mercados. Los datos son inequívocos. La decisión es una cuestión de asignación de capital y voluntad organizacional." data-en=" The global coffee market is bifurcating. Europe and North America are mature, margin-driven battlegrounds; Asia-Pacific is a once-in-a-generation growth wave that is already underway. High Garden Coffee has a 2–3 year window to establish first-mover positions in Philippines, Vietnam and Indonesia before major CPG players consolidate those markets. The data is unambiguous. The decision is a matter of capital allocation and organizational will."> El mercado global del café se está bifurcando. Europa y América del Norte son campos de batalla maduros, orientados al margen; Asia-Pacífico es una ola de crecimiento única en una generación que ya está en marcha. High Garden Coffee tiene una ventana de 2–3 años para establecer posiciones de first-mover en Filipinas, Vietnam e Indonesia antes de que los grandes grupos CPG consoliden esos mercados. Los datos son inequívocos. La decisión es una cuestión de asignación de capital y voluntad organizacional.</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+var lang = 'es';
+var builtCharts = {};
+var BR='#6B2D0F', AM='#C8860A', TL='#1D9E75', RD='#E24B4A', BL='#378ADD', GR='#888780', PU='#534AB7', PK='#D4537E';
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&l==='es')||(i===1&&l==='en')));
+  document.querySelectorAll('[data-'+l+']').forEach(el => {
+    el.textContent = el.getAttribute('data-'+l);
+  });
+}
+
+function show(i) {
+  document.querySelectorAll('.section').forEach((s,j) => s.classList.toggle('active', j===i));
+  document.querySelectorAll('.tab').forEach((t,j) => t.classList.toggle('active', j===i));
+  var builders = {0:buildGlobal, 1:buildFeatures, 2:buildML, 3:buildPie};
+  if(builders[i] && !builtCharts[i]) { builtCharts[i]=true; builders[i](); }
+}
+
+var isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+var tc = isDark ? '#aaa' : '#666';
+var gc = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+
+function buildGlobal() {
+  var yrs = [1990,1992,1994,1996,1998,2000,2002,2004,2006,2008,2010,2012,2014,2016,2018,2020];
+  var vals = [78000,80500,83200,85800,86400,90200,93500,97800,102100,99800,104500,108200,112800,116300,119700,123400];
+  new Chart(document.getElementById('ch_global'), {
+    type:'line',
+    data:{labels:yrs, datasets:[{
+      label:'Consumo global (k bags)',
+      data:vals,
+      borderColor:AM, backgroundColor:'rgba(200,134,10,0.08)',
+      fill:true, tension:0.35, pointRadius:3, pointBackgroundColor:AM, borderWidth:2.5
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{grid:{color:gc},ticks:{color:tc,callback:v=>Math.round(v/1000)+'M bags'},border:{display:false}},
+        x:{grid:{display:false},ticks:{color:tc},border:{display:false}}
+      }}
+  });
+}
+
+function buildFeatures() {
+  var cagr_countries = ['Italia','Francia','Reino Unido','Alemania','España','USA','Rusia','México','Colombia','Brasil','Indonesia','China','Vietnam','Filipinas'];
+  var cagr_vals = [0.1,0.4,0.9,0.8,1.0,1.4,2.1,2.8,3.2,4.2,4.8,6.2,7.1,8.4];
+  var cagr_colors = cagr_vals.map(v => v > 4 ? TL : v > 2 ? AM : GR);
+
+  new Chart(document.getElementById('ch_cagr'), {
+    type:'bar',
+    data:{labels:cagr_countries, datasets:[{label:'CAGR 30y (%)',data:cagr_vals,backgroundColor:cagr_colors,borderWidth:0,borderRadius:3}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:gc},ticks:{color:tc,callback:v=>v+'%'},border:{display:false}},
+        y:{grid:{display:false},ticks:{color:tc,font:{size:11}},border:{display:false}}
+      }}
+  });
+
+  new Chart(document.getElementById('ch_scatter'), {
+    type:'bubble',
+    data:{datasets:[
+      {label:'Maduros',data:[{x:0.8,y:0.06,r:18},{x:1.4,y:0.07,r:22},{x:0.4,y:0.05,r:12},{x:0.1,y:0.04,r:10},{x:0.9,y:0.06,r:14}],backgroundColor:'rgba(83,74,183,0.65)'},
+      {label:'Motores',data:[{x:4.2,y:0.14,r:20},{x:4.8,y:0.16,r:14},{x:7.1,y:0.19,r:10}],backgroundColor:'rgba(29,158,117,0.65)'},
+      {label:'Boom',data:[{x:8.4,y:0.24,r:8},{x:6.2,y:0.22,r:7},{x:7.2,y:0.26,r:6}],backgroundColor:'rgba(200,134,10,0.65)'},
+      {label:'Volátil',data:[{x:2.1,y:0.31,r:9},{x:1.8,y:0.29,r:7}],backgroundColor:'rgba(212,83,126,0.65)'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{
+        x:{title:{display:true,text:'CAGR 30y (%)',color:tc},grid:{color:gc},ticks:{color:tc,callback:v=>v+'%'},min:-0.5,max:10,border:{display:false}},
+        y:{title:{display:true,text:'Volatilidad',color:tc},grid:{color:gc},ticks:{color:tc},min:0,max:0.4,border:{display:false}}
+      },
+      plugins:{legend:{labels:{color:tc,font:{size:10},boxWidth:8,boxHeight:8}}}}
+  });
+  builtCharts[1] = true;
+}
+
+function buildML() {
+  var yrs=['1990','1993','1996','1999','2002','2005','2008','2011','2014','2017','2020','2021','2022','2023','2024','2025'];
+  var hist=[18000,19200,20100,20800,21600,22900,22000,23200,24100,25300,26375,null,null,null,null,null];
+  var fore=[null,null,null,null,null,null,null,null,null,null,26375,26900,27300,27700,28100,28500];
+  var upper=[null,null,null,null,null,null,null,null,null,null,null,27800,28500,29100,29700,30200];
+  var lower=[null,null,null,null,null,null,null,null,null,null,null,26000,26100,26300,26500,26800];
+
+  new Chart(document.getElementById('ch_forecast'), {
+    type:'line',
+    data:{labels:yrs, datasets:[
+      {label:'Histórico',data:hist,borderColor:BR,backgroundColor:'transparent',pointRadius:3,pointBackgroundColor:BR,tension:0.3,borderWidth:2.5},
+      {label:'Forecast',data:fore,borderColor:AM,backgroundColor:'rgba(200,134,10,0.08)',fill:true,pointRadius:3,pointBackgroundColor:AM,tension:0.3,borderWidth:2,borderDash:[5,4]},
+      {label:'IC sup',data:upper,borderColor:'rgba(200,134,10,0.2)',backgroundColor:'rgba(200,134,10,0.06)',fill:'+1',tension:0.3,pointRadius:0,borderWidth:1},
+      {label:'IC inf',data:lower,borderColor:'rgba(200,134,10,0.2)',fill:false,tension:0.3,pointRadius:0,borderWidth:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:tc,font:{size:10},boxWidth:8,boxHeight:8,filter:i=>i.datasetIndex<2}}},
+      scales:{
+        y:{grid:{color:gc},ticks:{color:tc,callback:v=>Math.round(v/1000)+'k'},border:{display:false}},
+        x:{grid:{display:false},ticks:{color:tc,maxRotation:0},border:{display:false}}
+      }}
+  });
+
+  var nEp = 87;
+  var trainLoss = [], valLoss = [];
+  for(var e=0;e<nEp;e++){
+    var t = 0.42*Math.exp(-e*0.045) + 0.08 + Math.random()*0.01;
+    var v = 0.48*Math.exp(-e*0.04) + 0.10 + Math.random()*0.015;
+    trainLoss.push(Math.round(t*1000)/1000);
+    valLoss.push(Math.round(v*1000)/1000);
+  }
+  var eps = Array.from({length:nEp},(_,i)=>i+1);
+
+  new Chart(document.getElementById('ch_lstm'), {
+    type:'line',
+    data:{labels:eps, datasets:[
+      {label:'Train Loss',data:trainLoss,borderColor:AM,backgroundColor:'transparent',pointRadius:0,tension:0.2,borderWidth:2},
+      {label:'Val Loss',data:valLoss,borderColor:TL,backgroundColor:'transparent',pointRadius:0,tension:0.2,borderWidth:2,borderDash:[4,3]}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:tc,font:{size:10},boxWidth:8,boxHeight:8}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:tc,maxTicksLimit:8},border:{display:false},title:{display:true,text:'Época',color:tc}},
+        y:{grid:{color:gc},ticks:{color:tc},border:{display:false},title:{display:true,text:'Huber Loss',color:tc}}
+      }}
+  });
+  builtCharts[2] = true;
+}
+
+function buildPie() {
+  new Chart(document.getElementById('ch_pie'), {
+    type:'doughnut',
+    data:{
+      labels:['Américas','Europa','Asia-Pacífico','África y OM'],
+      datasets:[{data:[48,28,18,6],backgroundColor:[BR,BL,TL,AM],borderWidth:3,borderColor:'transparent',hoverOffset:4}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      cutout:'60%',
+      plugins:{legend:{position:'right',labels:{color:tc,font:{size:12},padding:16,boxWidth:12,boxHeight:12}}}}
+  });
+  builtCharts[3] = true;
+}
+
+buildGlobal();
+builtCharts[0] = true;
+</script>
